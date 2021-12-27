@@ -1,0 +1,104 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	//querydsl 추가
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	id 'java'
+}
+
+group = 'com.company'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//기본 jdbc,jpa,spring security,web
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//채팅 및 gson
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+	implementation 'org.webjars.bower:bootstrap:4.3.1'
+	implementation 'org.webjars.bower:vue:2.5.16'
+	implementation 'org.webjars.bower:axios:0.17.1'
+	implementation 'org.webjars:sockjs-client:1.1.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+	implementation 'com.google.code.gson:gson:2.8.0'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
+//embedded-redis
+	implementation 'it.ozimov:embedded-redis:0.7.2'
+
+
+	implementation 'org.webjars:bootstrap:3.3.7'
+	implementation 'org.webjars:jquery:3.1.0'
+
+
+	implementation 'javax.xml.bind:jaxb-api'
+
+	// jwt 및 json
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	compileOnly 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	//query dsl
+	implementation 'com.querydsl:querydsl-jpa'
+
+	//lombok 어노테이션
+	compileOnly 'org.projectlombok:lombok:1.18.20'
+	annotationProcessor 'org.projectlombok:lombok:1.18.20'
+	testCompileOnly 'org.projectlombok:lombok:1.18.20'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+	//파일 업로더 aws s3 java sdk
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
+
+	//테스트 junit
+	testCompileOnly group: 'junit', name: 'junit', version: '4.11'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	//configuraton 어노테이션
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	//개발시만 dev tools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	//전체 db mysql
+	runtimeOnly 'mysql:mysql-connector-java'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl {
+	if(file(querydslDir).exists() ) delete(file(querydslDir))
+	options.annotationProcessorPath = configurations.querydsl
+}
+
+
